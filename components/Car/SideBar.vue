@@ -1,14 +1,14 @@
 <script setup lang="ts">
 const modal = ref({
-  make: "",
-  location: "",
-  price: "",
+  make: false,
+  location: false,
+  price: false,
 });
 
 const city = ref("");
 const route = useRoute();
 
-function updateModal(key: string) {
+function updateModal(key: keyof typeof modal.value) {
   modal.value[key] = !modal.value[key];
 }
 
