@@ -8,6 +8,13 @@ const handleSearch = () => {
   }
   navigateTo(`/city/${city.value.trim().toLowerCase()}/car`);
 };
+
+const onEnter = () => {
+  if (!city.value) {
+    return (cityError.value = true);
+  }
+  navigateTo(`/city/${city.value.trim().toLowerCase()}/car`);
+};
 </script>
 
 <template>
@@ -20,6 +27,7 @@ const handleSearch = () => {
       :class="cityError ? 'border-red-500 border' : ''"
       placeholder="Suche in deiner Stadt"
       v-model="city"
+      @keyup.enter="onEnter"
     />
     <button class="bg-sky-500 px-10 text-white" @click="handleSearch()">
       Suchen

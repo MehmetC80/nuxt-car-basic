@@ -7,7 +7,7 @@ const props = defineProps({
 <template>
   <div>
     <div class="mt-10">
-      <img :src="car.url" alt="" class="w-full object-cover" />
+      <NuxtImg :src="car.url" alt="" class="w-full object-cover" />
       <h1 class="text-4xl mt-10">{{ car.name }}</h1>
       <div
         class="flex justify-between text-lg text-slate-500 mt-3 border-b pb-5"

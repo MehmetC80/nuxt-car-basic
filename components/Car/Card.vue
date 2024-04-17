@@ -12,18 +12,32 @@
 //   },
 // };
 
+import heardFilled from "@/assets/images/headfill.png";
+import heardOutline from "@/assets/images/heard.png";
+
 const props = defineProps({
   car: Object,
+  favored: Boolean,
 });
+
+// const favorite = useState(`favored-${props.car.id}`, () => {
+//   return false;
+// });
+
+const emit = defineEmits(["favor"]);
 </script>
 
 <template>
   <div
-    class="shadow border w-full overflow-hidden mb-5 cursor-pointer h-[200px]"
-    @click="navigateTo(`/car/${car.name}-${car.id}`)"
+    class="relative shadow border w-full overflow-hidden mb-5 cursor-pointer h-[200px]"
   >
-    <div class="flex h-full">
-      <img :src="car.url" alt="bmw" class="w-[300px] h-full object-cover" />
+    <img
+      :src="favored ? heardFilled : heardOutline"
+      class="absolute w-7 right-5 top-2 z-20"
+      @click="emit('favor', car.id)"
+    />
+    <div class="flex h-full" @click="navigateTo(`/car/${car.name}-${car.id}`)">
+      <NuxtImg :src="car.url" alt="bmw" class="w-[300px] h-full object-cover" />
       <div class="p-4 flex flex-col">
         <div>
           <h2 class="text-2xl text-blue-700">{{ car.name }}</h2>
