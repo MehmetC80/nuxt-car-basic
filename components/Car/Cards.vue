@@ -1,6 +1,14 @@
 <script setup>
+/*
+das war um die cars von der json direkt zu fetchen
 const { cars } = useCars();
+*/
 
+// Ab hier werden die Daten von der api gefetcht
+
+const props = defineProps({
+  cars: Array,
+});
 const favorite = useLocalStorage("favorite", {});
 
 const handleFavorite = (id) => {

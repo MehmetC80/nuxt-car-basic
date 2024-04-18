@@ -1,6 +1,7 @@
 <script setup>
 const route = useRoute();
-const { cars } = useCars();
+
+const { data: car } = await useFetchCar(route.params.id);
 
 useHead({
   title: `${route.params.name}`,
@@ -10,18 +11,21 @@ definePageMeta({
   layout: "custom",
 });
 
-const car = computed(() => {
-  return cars.find((c) => {
-    return c.id === parseInt(route.params.id);
-  });
-});
+// Aukommnetierter code ist wenn man aus einer json direkt die daten fetched
+// const { cars } = useCars();
 
-if (!car.value) {
-  throw createError({
-    statusCode: 404,
-    message: `Auto mit der ${route.params.id} existiert nicht.`,
-  });
-}
+// const car = computed(() => {
+//   return cars.find((c) => {
+//     return c.id === parseInt(route.params.id);
+//   });
+// });
+
+// if (!car.value) {
+//   throw createError({
+//     statusCode: 404,
+//     message: `Auto mit der ${route.params.id} existiert nicht.`,
+//   });
+//}
 </script>
 
 <template>
