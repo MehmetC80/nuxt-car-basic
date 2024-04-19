@@ -13,6 +13,8 @@ definePageMeta({
 });
 
 const { makes } = useCars();
+const user = useSupabaseUser();
+const supabase = useSupabaseClient();
 
 const info = useState("addInfo", () => {
   return {
@@ -48,68 +50,80 @@ const inputs = [
   },
   {
     id: 3,
+    title: "Price *",
+    name: "price",
+    placeholder: "1000",
+  },
+  {
+    id: 4,
     title: "Miles *",
     name: "miles",
     placeholder: "10000",
   },
   {
-    id: 4,
+    id: 5,
     title: "City *",
     name: "city",
-    placeholder: "Austin",
+    placeholder: "Berlin",
   },
   {
-    id: 5,
+    id: 6,
     title: "Number of Seats *",
     name: "seats",
     placeholder: "5",
   },
   {
-    id: 6,
+    id: 7,
     title: "Features *",
     name: "features",
-    placeholder: "Leather Interior, No Accidents",
+    placeholder: "Leder, Automatik",
   },
 ];
 
-// const inputs = [
-//   {
-//     id: 1,
-//     title: "Model *",
-//     name: "model",
-//     placeholder: "Civic",
-//   },
-//   {
-//     id: 2,
-//     title: "Year *",
-//     name: "year",
-//     placeholder: "2024",
-//   },
-//   {
-//     id: 3,
-//     title: "KM *",
-//     name: "miles",
-//     placeholder: "10000",
-//   },
-//   {
-//     id: 4,
-//     title: "City *",
-//     name: "city",
-//     placeholder: "Berlin",
-//   },
-//   {
-//     id: 5,
-//     title: "Anzal Sitzplätze *",
-//     name: "seats",
-//     placeholder: "5",
-//   },
-//   {
-//     id: 6,
-//     title: "Eigenschaften *",
-//     name: "features",
-//     placeholder: "Leder Interior",
-//   },
-// ];
+const errorMessage = ref("");
+
+const isButtonDisabled = computed(() => {
+  for (let key in info.value) {
+    if (!info.value[key]) return true;
+  }
+  return false;
+});
+
+const handleSubmit = async () => {
+  const fileName = Math.floor(Math.random() * 1000000000);
+  const { data, error } = await supabase.storage
+    .from("images")
+    .upload("public/" + fileName, info.value.image);
+
+  if (error) {
+    errorMessage.value = "Bild konnte nicht hochgeladen werden.";
+  }
+  const body = {
+    ...info.value,
+    city: info.value.city.toLowerCase(),
+    features: info.value.features.split(", "),
+    numberOfSeats: parseInt(info.value.seats),
+    price: parseInt(info.value.price),
+    year: parseInt(info.value.year),
+    miles: parseInt(info.value.miles),
+    name: `${info.value.make}  ${info.value.model}`,
+    listerId: user.value.id,
+    image: data.path,
+  };
+
+  delete body.seats;
+
+  try {
+    const response = await $fetch("/api/car/listings", {
+      method: "POST",
+      body,
+    });
+    navigateTo("/profile/listings");
+  } catch (error) {
+    errorMessage.value = error.statusMessage;
+    await supabase.storage.from("images").remove(data.path);
+  }
+};
 </script>
 
 <template>
@@ -139,6 +153,16 @@ const inputs = [
         @change-input="onInputChange"
       />
       <CarAddImage @change-input="onInputChange" />
+      <div>
+        <button
+          :disabled="isButtonDisabled"
+          @click="handleSubmit"
+          class="bg-blue-400 text-white rounded py-2 px-7 mt-3"
+        >
+          Speichern
+        </button>
+        <p v-if="errorMessage" class="mt-4 text-red-600">{{ errorMessage }}</p>
+      </div>
     </div>
   </div>
 </template>

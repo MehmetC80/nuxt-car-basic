@@ -8,7 +8,7 @@ const schema = Joi.object({
   }),
   phone: Joi.string()
     .length(10)
-    .pattern(/^[0-0]+$/)
+    .pattern(/^[0-9]+$/)
     .required(),
   name: Joi.string().required(),
   message: Joi.string().min(2).required(),
@@ -17,10 +17,10 @@ const schema = Joi.object({
 const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody();
+  const body = await readBody(event);
   const { listingId } = event.context.params;
 
-  const { error, value } = await schema.validate(body);
+  const { error } = await schema.validate(body);
 
   const { email, message, phone, name } = await body;
 

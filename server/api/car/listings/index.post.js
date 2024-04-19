@@ -4,8 +4,8 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const schema = Joi.object({
-  make: Joi.string(),
-  model: Joi.string(),
+  make: Joi.string().required(),
+  model: Joi.string().required(),
   year: Joi.number()
     .min(1886)
     .max(new Date().getFullYear() + 1),
@@ -23,7 +23,7 @@ const schema = Joi.object({
 export default eventHandler(async (event) => {
   const body = await readBody(event);
 
-  const { error, value } = await schema.validate(body);
+  const { error } = await schema.validate(body);
 
   if (error) {
     throw createError({
@@ -31,6 +31,21 @@ export default eventHandler(async (event) => {
       statusMessage: error.message,
     });
   }
+
+  const {
+    make,
+    name,
+    numberOfSeats,
+    price,
+    image,
+    miles,
+    features,
+    description,
+    city,
+    year,
+    model,
+    listerId,
+  } = await body;
 
   const car = await prisma.car.create({
     data: {
